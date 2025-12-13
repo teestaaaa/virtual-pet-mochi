@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Mochi 🐦</title>
+
+<style>
+  body {
+    margin: 0;
+    height: 100vh;
+    font-family: "Segoe UI", sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 1s;
+  }
+
+  body.day {
+    background: linear-gradient(#fef6ff, #e9f0ff);
+  }
+
+  body.night {
+    background: linear-gradient(#1e1e3f, #0d0d1f);
+  }
+
+  .pet-box {
+    background: white;
+    border-radius: 20px;
+    padding: 24px;
+    width: 320px;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+  }
+
+  body.night .pet-box {
+    background: #1b1b2e;
+    color: #eee;
+  }
+
+  .pet {
+    width: 120px;
+    animation: hop 2s infinite ease-in-out;
+    cursor: pointer;
+  }
+
+  .sleeping {
+    animation: none;
+    opacity: 0.6;
+  }
+
+  @keyframes hop {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
+
+  h1 { margin: 10px 0 5px; }
+
+  .stats {
+    font-size: 13px;
+    margin: 6px 0;
+  }
+
+  .message {
+    min-height: 44px;
+    margin: 10px 0;
+    font-size: 14px;
+  }
+
+  button {
+    border: none;
+    padding: 8px 12px;
+    margin: 4px;
+    border-radius: 12px;
+    background: #e6ddff;
+    cursor: pointer;
+    font-size: 13px;
+  }
+
+  body.night button {
+    background: #3b3b6b;
+    color: white;
+  }
+
+  .footer {
+    font-size: 11px;
+    opacity: 0.7;
+    margin-top: 8px;
+  }
+</style>
+</head>
+
+<body class="day">
+
+<div class="pet-box">
+  <img src="20251101_200822.jpg" id="pet" class="pet" onclick="petMochi()">
+  <h1>Mochi</h1>
+
+  <div class="stats">
+    Hunger: <span id="hunger">50</span>/100
+  </div>
+
+  <div class="message" id="message">
+    Mochi is happy to see you.
+  </div>
+
+  <button onclick="feed('seeds')">🌾 Seeds</button>
+  <button onclick="feed('berries')">🍓 Berries</button>
+  <button onclick="feed('bread')">🍞 Bread</button>
+
+  <div class="footer">a little companion</div>
+</div>
+
+<script>
+  let hunger = 50;
+  let sleeping = false;
+
+  const messageBox = document.getElementById("message");
+  const hungerBox = document.getElementById("hunger");
+  const petImg = document.getElementById("pet");
+
+  const calmMessages = [
+    "It’s okay to slow down.",
+    "Some moments are meant to be quiet.",
+    "Mochi feels peaceful.",
+    "Nothing urgent right now."
+  ];
+
+  const playfulMessages = [
+    "Chirp!",
+    "*happy fluff noises*",
+    "Mochi is vibing.",
+    "This is kinda fun!"
+  ];
+
+  function setMessage(text) {
+    messageBox.textContent = text;
+  }
+
+  function random(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+  }
+
+  function feed(type) {
+    if (sleeping) {
+      setMessage("Mochi is sleeping...");
+      return;
+    }
+
+    let gain = type === "seeds" ? 10 :
+               type === "berries" ? 15 : 8;
+
+    hunger = Math.min(100, hunger + gain);
+    hungerBox.textContent = hunger;
+
+    setMessage(
+      type === "berries" ? "Mochi loves sweet berries!" :
+      type === "seeds" ? "Crunch crunch!" :
+      "Warm and filling."
+    );
+  }
+
+  function petMochi() {
+    if (sleeping) {
+      setMessage("Mochi is sleeping...");
+      return;
+    }
+    setMessage(random([...calmMessages, ...playfulMessages]));
+  }
+
+  // Hunger decreases slowly
+  setInterval(() => {
+    hunger = Math.max(0, hunger - 1);
+    hungerBox.textContent = hunger;
+
+    if (hunger <= 20 && !sleeping) {
+      setMessage("Mochi looks a little hungry.");
+    }
+  }, 15000);
+
+  // Random sleep
+  setInterval(() => {
+    sleeping = !sleeping;
+    if (sleeping) {
+      petImg.classList.add("sleeping");
+      setMessage("Mochi is sleeping...");
+    } else {
+      petImg.classList.remove("sleeping");
+      setMessage("Mochi woke up!");
+    }
+  }, 60000);
+
+  // Day / Night cycle
+  setInterval(() => {
+    document.body.classList.toggle("night");
+    document.body.classList.toggle("day");
+  }, 90000);
+
+</script>
+
+</body>
+</html>
